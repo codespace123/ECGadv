@@ -1,6 +1,6 @@
 ## ECGadv: Generating Adversarial Electrocardiogram to Misguide Arrhythmia Classification System
 
-This code is for paper "ECGadv: Generating Adversarial Electrocardiogram to Misguide Arrhythmia Classification System".
+These codes are for paper "ECGadv: Generating Adversarial Electrocardiogram to Misguide Arrhythmia Classification System".
 
 ### Installing
 * Python 3.6.5
