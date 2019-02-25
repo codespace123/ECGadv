@@ -7,17 +7,6 @@ from cleverhans.attacks import Attack
 _logger = utils.create_logger("LDM_EOT_attacks")
 
 class LDM_EOT_ATTACK(Attack):
-    """
-    This attack was originally proposed by Carlini and Wagner. It is an
-    iterative attack that finds adversarial examples on many defenses that
-    are robust to other attacks.
-    Paper link: https://arxiv.org/abs/1608.04644
-
-    At a high level, this attack is an iterative attack using Adam and
-    a specially-chosen loss function to find adversarial examples with
-    lower distortion than other attacks. This comes at the cost of speed,
-    as this attack is often much slower than others.
-    """
     def __init__(self, model, back='tf', sess=None, dtypestr='float32'):
         """
         Note: the model parameter should be an instance of the
@@ -73,8 +62,8 @@ class LDM_EOT_ATTACK(Attack):
                               If binary_search_steps is large, the initial
                               constant is not important. A smaller value of
                               this constant gives lower distortion results.
-        :param clip_min: (optional float) Minimum input component value
-        :param clip_max: (optional float) Maximum input component value
+        :param clip_min: (optional float) Minimum input component value (not used)
+        :param clip_max: (optional float) Maximum input component value (not used)
         """
         import tensorflow as tf
         from LDM_EOT_tf import LDM_EOT_tf_ATTACK

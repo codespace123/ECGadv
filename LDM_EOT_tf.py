@@ -86,8 +86,8 @@ class LDM_EOT_tf_ATTACK(object):
                               If binary_search_steps is large, the initial
                               constant is not important. A smaller value of
                               this constant gives lower distortion results.
-        :param clip_min: (optional float) Minimum input component value.
-        :param clip_max: (optional float) Maximum input component value.
+        :param clip_min: (optional float) Minimum input component value. (not used)
+        :param clip_max: (optional float) Maximum input component value. (not used)
         :param num_labels: the number of classes in the model's output.
         :param shape: the shape of the model's input tensor.
         :param dis_metric: the distance metirc, 1 for l2, 2 for smoothness

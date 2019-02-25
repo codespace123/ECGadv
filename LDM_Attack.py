@@ -28,11 +28,10 @@ print("Loading model")
 model = load_model('./ResNet_30s_34lay_16conv.hdf5')
 
 wrap = KerasModelWrapper(model)
+#wrap = KerasModelWrapper(model, nb_classes=4)
 
 x = tf.placeholder(tf.float32, shape=(None, 9000, 1))
 y = tf.placeholder(tf.float32, shape=(None, 4))
-
-
 
 
 def preprocess(x, maxlen):
