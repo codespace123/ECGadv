@@ -66,23 +66,23 @@ python attack_file index_file start_idx end_idx
 
 Example run:
 ```
-python LDM_Attack.py ID Target WindowSize
+python LDM_Attack.py ID Target Window_Size
 ```
 
 * *ID* - sample ID for attack 
 * *Target* - target class
-* *WindowSize* - perturbation window size
+* *Window_Size* - perturbation window size
 
 *LDM_UniversalEval.py: Test perturbation generated from LDM_Attack.py. The program will load the perturbation in "./output/$GroundTruth/ and test it via adding it to all the samples in data_select_?.csv with the targeted class. 
 
 Example run: 
 ```
-python LDM_UniversalEval.py ID Target WindowSize
+python LDM_UniversalEval.py ID Target Window_Size
 ```
 
 * *ID* - The ID of samples that generate the perturbation.
 * *Target* - target class. 0,1,2,3 represents A, N, O, ~ respectively
-* *WindowSize* - perturbation window size. The integer value is better to divide the length of the origin sample which is 9000. Because we haven't test other conditions.
+* *Window_Size* - perturbation window size. The integer value is better to divide the length of the origin sample which is 9000. Because we haven't test other conditions.
 
 To demostrate the universality of the attack, the program will test all the samples in data_select_$Target.csv that belong to *Target*.
 
