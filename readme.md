@@ -61,7 +61,8 @@ python attack_file index_file start_idx end_idx
 
 #### For attacks against local deployment model: 
 
-LDM_Attack.py: Generate attack perturbation for Local Deployment Model and save it in "./output/$GroundTruth/" 
+* LDM_EOT.py & LDM_EOT_tf.py: Attack func with EOT
+* LDM_Attack.py: Generate attack perturbation for Local Deployment Model and save it in "./output/$GroundTruth/" 
 
 Example run:
 ```
@@ -72,9 +73,7 @@ python LDM_Attack.py ID Target WindowSize
 * *Target* - target class
 * *WindowSize* - perturbation window size
 
-LDM_UniversalEval.py:
-Test perturbation generated from LDM_Attack.py
-The program will load the perturbation in "./output/$GroundTruth/ and test it via adding it to all the samples in data_select_?.csv with the targeted class. 
+*LDM_UniversalEval.py: Test perturbation generated from LDM_Attack.py. The program will load the perturbation in "./output/$GroundTruth/ and test it via adding it to all the samples in data_select_?.csv with the targeted class. 
 
 Example run: 
 ```
