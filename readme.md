@@ -68,7 +68,7 @@ python LDM_Attack.py ID Target WindowSize
 
 * *ID* - sample ID for attack 
 * *Target* - target class
-* WindowSize* - perturbation window size
+* *WindowSize* - perturbation window size
 
 LDM_UniversalEval.py:
 Test perturbation generated from LDM_Attack.py
