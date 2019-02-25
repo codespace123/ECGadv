@@ -57,6 +57,8 @@ python attack_file index_file start_idx end_idx
 * *start_idx*: integer, at least 1
 * *end_idx*: integer, not included 
 
+./cloud\_model/metric_compare.py: given *idx*, *TRUTH* and *TARGET*, plot a figure including the original sample and three adversarial ones. 
+
 #### For attacks against local deployment model: 
 
 LDM_Attack.py: Generate attack perturbation for Local Deployment Model and save it in "./output/$GroundTruth/" 
