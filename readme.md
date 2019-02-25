@@ -81,10 +81,10 @@ python LDM_UniversalEval.py ID Target WindowSize
 ```
 
 * *ID* - The ID of samples that generate the perturbation.
-* *Target* - target class
-* *WindowSize* - perturbation window size
+* *Target* - target class. 0,1,2,3 represents A, N, O, ~ respectively
+* *WindowSize* - perturbation window size. The integer value is better to divide the length of the origin sample which is 9000. Because we haven't test other conditions.
 
-To demostrate the universality of the attack, the program will test all the samples that belong to *Target*.
+To demostrate the universality of the attack, the program will test all the samples in data_select_$Target.csv that belong to *Target*.
 
 #### License
 
