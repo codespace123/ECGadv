@@ -8,6 +8,8 @@ import scipy.io
 from numpy import genfromtxt
 import sys
 import csv
+from scipy import signal
+
 def preprocess(x, maxlen):
     x = np.nan_to_num(x)
     x = x[0, 0:maxlen]
@@ -82,7 +84,7 @@ ground_truth_a = utils.to_categorical(ground_truth, num_classes=4)
 print("Record {} ground truth: {}".format(record, ground_truth_label))
 
 # loading perturbation
-filename = './output/' + str(ground_truth) + '/LDM_Attack_w' + str(perturb_window) + '_l2_A' + record + 'T' + str(target) + '.out'
+filename = './output/' + str(ground_truth) + '/LDM_Attack_w' + str(perturb_window) + '_l2_' + record + 'T' + str(target) + '.out'
 perturb = genfromtxt(filename, delimiter=',')
 perturb = filter(perturb)
 perturb = np.expand_dims(perturb, axis=0)
