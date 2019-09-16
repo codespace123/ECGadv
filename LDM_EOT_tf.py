@@ -18,12 +18,15 @@ data_len = 9000
 def ZERO():
     return np.asarray(0., dtype=np_dtype)
 
+# rectangular filter
 def bandPassFilter(x, mask):
     stfts = tf.contrib.signal.stft(tf.reshape(x,[9000]), data_len, 1,window_fn=None)
     stfts_masked = tf.multiply(tf.reshape(stfts,[1,8193]),mask)
     inverse_stfts = tf.contrib.signal.inverse_stft(stfts_masked, data_len,1,window_fn=None)
     return tf.reshape(inverse_stfts,[9000])
 
+
+# Expectation of transformation
 def EOT_time(x, start, ensemble_size, mask):
     def randomizing_EOT(x, start):
         rand_i = tf.expand_dims(tf.random_uniform((), start+1, data_len+1, dtype=tf.int32), axis=0)
@@ -118,8 +121,6 @@ class LDM_EOT_tf_ATTACK(object):
         self.shape = shape = tuple([batch_size] + list(shape))
         shape_perturb = tuple([batch_size, perturb_window, 1])
 
-        #  self.transform_shape = transform_shape = tuple([transform_batch_size] + list(transform_shape))
-        #        self.shape = shape = tuple(list(shape))
 
         # the variable we're going to optimize over
         modifier = tf.Variable(np.zeros(shape_perturb, dtype=np_dtype))
@@ -153,6 +154,8 @@ class LDM_EOT_tf_ATTACK(object):
             start_p = perturb_window
 
         self.newimg = tf.slice(modifier_tile, (0, 0, 0), shape) + self.timg
+        
+        # mask for rectangular filter
         mask = tf.cast(tf.concat([tf.concat([tf.concat([tf.ones([1, 1]), tf.zeros([1, 3])], 1), tf.concat([tf.ones([1, 2727]), tf.zeros([1, 1])], 1)],1),
                                   tf.concat([tf.concat([tf.ones([1, 545]), tf.zeros([1, 1])], 1), tf.ones([1, 4915])],1)], 1), dtype=tf.complex64)
 
