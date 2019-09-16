@@ -19,24 +19,39 @@ def preprocess(x, maxlen):
     x = np.expand_dims(x, axis=2)  # required by Keras
     del tmp
     return x
+
+def filter(x):
+    fs = 300
+
+    #butterworth
+    b, a = signal.butter(3, 0.05, btype='hp', fs = 300)
+    bandpss_x = signal.lfilter(b, a, x)
+
+    #notch filter
+    f0 = 60
+    b, a = signal.iirnotch(f0, 30, fs)
+    y = signal.lfilter(b, a, bandpss_x)
+    f0 = 50
+    b, a = signal.iirnotch(f0, 30, fs)
+    y = signal.lfilter(b, a, y)
+    return y
+
 def zero_mean(x):
     x = x - np.mean(x)
     x = x / np.std(x)
     return x
-# for perturb_window == 9000
-def op_concate(x, p):
-    data_len = 9000
-    x_tile = np.tile(x, (1, 1, 1))
-    x1 = x_tile[:, 0:p, :]
-    x2 = x_tile[:, p:data_len, :]
-    return np.append(x2, x1, axis=1)
 
-# for perturb_window != 9000
-def op_concate2(x,w,p):
-    x_tile = np.tile(x, (1, 1, 1))
-    x1 = np.zeros((1,9000,1))
-    x1[0,p:p+w,0] = x_tile[0,:,0]
-    return x1
+def op_concate(x,w,p):
+    if w != 9000:
+        x_tile = np.tile(x, (1, 1, 1))
+        new_x = np.zeros((1,9000,1))
+        new_x[0,p:p+w,0] = x_tile[0,:,0]
+    else:
+        x_tile = np.tile(x, (1, 1, 1))
+        x1 = x_tile[:, 0:p, :]
+        x2 = x_tile[:, p:9000, :]
+        new_x = np.append(x2, x1, axis=1)
+    return new_x
 
 # parameters
 dataDir = './training2017/'
@@ -69,6 +84,7 @@ print("Record {} ground truth: {}".format(record, ground_truth_label))
 # loading perturbation
 filename = './output/' + str(ground_truth) + '/LDM_Attack_w' + str(perturb_window) + '_l2_A' + record + 'T' + str(target) + '.out'
 perturb = genfromtxt(filename, delimiter=',')
+perturb = filter(perturb)
 perturb = np.expand_dims(perturb, axis=0)
 perturb = np.expand_dims(perturb, axis=2)
 
@@ -123,15 +139,9 @@ for i, id_float in enumerate(target_id):
         # randomly select shifting position
         pos = randrange(0, maxpos)
         if p == 0:
-            if perturb_window == 9000:
-                test_all = zero_mean(op_concate(perturb, pos) + X_test_1)
-            else:
-                test_all = zero_mean(op_concate2(perturb, perturb_window, pos) + X_test_1)
+           test_all = zero_mean(op_concate(perturb, perturb_window, pos) + X_test_1)
         else:
-            if perturb_window == 9000:
-                test_all = np.append(test_all,zero_mean(op_concate(perturb, pos) + X_test_1), axis=0)
-            else:
-                test_all = np.append(test_all, zero_mean(op_concate2(perturb, perturb_window, pos) + X_test_1), axis=0)
+           test_all = np.append(test_all, zero_mean(op_concate(perturb, perturb_window, pos) + X_test_1), axis=0)
 
     # Predict
     prob = model.predict(test_all)
