@@ -3,15 +3,11 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
-import math
 import numpy as np
-from six.moves import xrange
 import tensorflow as tf
-import time
 import cleverhans.utils as utils
-import cleverhans.utils_tf as utils_tf
 import itertools
-from mysoftdtw_c_wd import mysoftdtw
+
 
 _logger = utils.create_logger("myattacks.tf")
 
@@ -22,16 +18,21 @@ data_len = 9000
 def ZERO():
     return np.asarray(0., dtype=np_dtype)
 
+def bandPassFilter(x, mask):
+    stfts = tf.contrib.signal.stft(tf.reshape(x,[9000]), data_len, 1,window_fn=None)
+    stfts_masked = tf.multiply(tf.reshape(stfts,[1,8193]),mask)
+    inverse_stfts = tf.contrib.signal.inverse_stft(stfts_masked, data_len,1,window_fn=None)
+    return tf.reshape(inverse_stfts,[9000])
 
-def EOT_time(x, start, ensemble_size):
+def EOT_time(x, start, ensemble_size, mask):
     def randomizing_EOT(x, start):
         rand_i = tf.expand_dims(tf.random_uniform((), start+1, data_len+1, dtype=tf.int32), axis=0)
         p = tf.concat([rand_i, data_len - rand_i], axis=0)
         x1, x2 = tf.split(x, p, axis=1)
-        res = tf.reshape(tf.concat([x2, x1], axis=1), [1, data_len, 1])
+        res = tf.reshape(bandPassFilter(tf.concat([x2, x1], axis=1),mask), [1, data_len, 1])
         return res
 
-    return tf.concat([randomizing_EOT(x, start) for _ in range(ensemble_size)], axis=0)
+    return tf.concat([randomizing_EOT(x, start) for _ in range(int(ensemble_size))], axis=0)
 
 def Seq1():
    tmp = np.zeros((1, 9001, 1), dtype=np_dtype)
@@ -152,7 +153,10 @@ class LDM_EOT_tf_ATTACK(object):
             start_p = perturb_window
 
         self.newimg = tf.slice(modifier_tile, (0, 0, 0), shape) + self.timg
-        batch_newdata = EOT_time(modifier_tile, start_p, self.ensemble_size) + self.timg
+        mask = tf.cast(tf.concat([tf.concat([tf.concat([tf.ones([1, 1]), tf.zeros([1, 3])], 1), tf.concat([tf.ones([1, 2727]), tf.zeros([1, 1])], 1)],1),
+                                  tf.concat([tf.concat([tf.ones([1, 545]), tf.zeros([1, 1])], 1), tf.ones([1, 4915])],1)], 1), dtype=tf.complex64)
+
+        batch_newdata =  EOT_time(modifier_tile, start_p, self.ensemble_size, mask) + self.timg
 
         self.batch_newimg = zero_mean(batch_newdata)
 
@@ -354,4 +358,3 @@ class LDM_EOT_tf_ATTACK(object):
         return o_bestattack
 
 # ---------------------------------------------------------------------------------
-
